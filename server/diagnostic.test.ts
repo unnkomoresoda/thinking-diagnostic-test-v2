@@ -20,32 +20,32 @@ import {
 // ============================================================
 describe("calculateBaseType", () => {
   it("returns ESTJ when all answers are A", () => {
-    // All A: E(5) > I(0), S(5) > N(0), T(5) > F(0), J(5) > P(0)
+    // All A: E(10) > I(0), S(10) > N(0), T(10) > F(0), J(10) > P(0)
     const answers: Record<string, string> = {};
     for (const q of BASE_TYPE_QUESTIONS) {
       answers[q.id] = "A";
     }
     const result = calculateBaseType(answers);
     expect(result.type).toBe("ESTJ");
-    expect(result.scores.EI.first).toBe(5);
+    expect(result.scores.EI.first).toBe(10);
     expect(result.scores.EI.second).toBe(0);
-    expect(result.scores.SN.first).toBe(5);
-    expect(result.scores.TF.first).toBe(5);
-    expect(result.scores.JP.first).toBe(5);
+    expect(result.scores.SN.first).toBe(10);
+    expect(result.scores.TF.first).toBe(10);
+    expect(result.scores.JP.first).toBe(10);
   });
 
   it("returns INFP when all answers are B", () => {
-    // All B: I(5) > E(0), N(5) > S(0), F(5) > T(0), P(5) > J(0)
+    // All B: I(10) > E(0), N(10) > S(0), F(10) > T(0), P(10) > J(0)
     const answers: Record<string, string> = {};
     for (const q of BASE_TYPE_QUESTIONS) {
       answers[q.id] = "B";
     }
     const result = calculateBaseType(answers);
     expect(result.type).toBe("INFP");
-    expect(result.scores.EI.second).toBe(5);
-    expect(result.scores.SN.second).toBe(5);
-    expect(result.scores.TF.second).toBe(5);
-    expect(result.scores.JP.second).toBe(5);
+    expect(result.scores.EI.second).toBe(10);
+    expect(result.scores.SN.second).toBe(10);
+    expect(result.scores.TF.second).toBe(10);
+    expect(result.scores.JP.second).toBe(10);
   });
 
   it("handles empty answers gracefully", () => {
@@ -247,16 +247,16 @@ describe("data integrity", () => {
     expect(totalNames).toBe(80);
   });
 
-  it("has exactly 20 base type questions (5 per dimension)", () => {
-    expect(BASE_TYPE_QUESTIONS).toHaveLength(20);
+  it("has exactly 40 base type questions (10 per dimension)", () => {
+    expect(BASE_TYPE_QUESTIONS).toHaveLength(40);
     const dims = BASE_TYPE_QUESTIONS.reduce((acc, q) => {
       acc[q.dimension] = (acc[q.dimension] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
-    expect(dims["EI"]).toBe(5);
-    expect(dims["SN"]).toBe(5);
-    expect(dims["TF"]).toBe(5);
-    expect(dims["JP"]).toBe(5);
+    expect(dims["EI"]).toBe(10);
+    expect(dims["SN"]).toBe(10);
+    expect(dims["TF"]).toBe(10);
+    expect(dims["JP"]).toBe(10);
   });
 
   it("has exactly 10 layer questions", () => {

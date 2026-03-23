@@ -60,6 +60,10 @@ export default function AdminDashboard() {
     { enabled: isAdmin }
   );
 
+  const { data: typeDistribution, isLoading: typeDistributionLoading } = trpc.admin.typeDistribution.useQuery(undefined, {
+    enabled: isAdmin,
+  });
+
   // Filter results by search
   const filteredResults = useMemo(() => {
     if (!results) return [];
@@ -121,6 +125,10 @@ export default function AdminDashboard() {
 
   const maxLayerCount = stats?.layerDist
     ? Math.max(...stats.layerDist.map((d) => d.count), 1)
+    : 1;
+
+  const maxTypeCount = typeDistribution
+    ? Math.max(...typeDistribution.map((d) => d.count), 1)
     : 1;
 
   return (
@@ -298,6 +306,37 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
         ) : null}
+
+        {/* 80 Type Distribution */}
+        <Card className="mb-8">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-base flex items-center gap-2">
+              <BarChart3 className="w-4 h-4" />
+              80タイプ分布（全タイプ）
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {typeDistributionLoading ? (
+              <div className="text-sm text-muted-foreground py-8 text-center">読み込み中...</div>
+            ) : typeDistribution?.length ? (
+              <div className="space-y-2 max-h-96 overflow-y-auto">
+                {typeDistribution.map((d, i) => (
+                  <HorizontalBar
+                    key={d.typeCode}
+                    label={d.typeCode}
+                    value={d.count}
+                    max={maxTypeCount}
+                    color={baseTypeColors[i % baseTypeColors.length]}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-sm text-muted-foreground py-8 text-center">
+                まだ診断データがありません
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Results Table */}
         <Card>

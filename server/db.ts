@@ -243,3 +243,23 @@ export async function getMonthlyStats() {
 
   return monthlyStats;
 }
+
+// ---- Type Distribution Statistics ----
+
+export async function getTypeDistribution() {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Get all 80 types with their diagnostic counts, sorted by count (descending)
+  const typeDistribution = await db
+    .select({
+      typeCode: diagnosticResults.typeCode,
+      typeName: diagnosticResults.typeName,
+      count: count(),
+    })
+    .from(diagnosticResults)
+    .groupBy(diagnosticResults.typeCode, diagnosticResults.typeName)
+    .orderBy(desc(count()));
+
+  return typeDistribution;
+}
