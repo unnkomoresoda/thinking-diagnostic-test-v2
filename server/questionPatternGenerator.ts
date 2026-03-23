@@ -49,14 +49,13 @@ Format as JSON with structure:
       {
         role: "system",
         content:
-          "You are a JSON generator. Always respond with valid JSON only, no markdown formatting.",
+          "You are a JSON generator. Always respond with valid JSON only, no markdown formatting. Do not include markdown code blocks or any text outside the JSON.",
       },
       {
         role: "user",
         content: prompt,
       },
     ],
-    response_format: { type: "json_object" },
   });
 
   const content = result.choices[0]?.message?.content;
@@ -65,8 +64,17 @@ Format as JSON with structure:
   }
 
   try {
+    // Extract JSON from the content (handle markdown code blocks and extra text)
+    let jsonStr = content;
+    
+    // Remove markdown code blocks if present
+    const jsonMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (jsonMatch) {
+      jsonStr = jsonMatch[1];
+    }
+    
     // Clean up the content to handle control characters
-    const cleanedContent = content
+    const cleanedContent = jsonStr
       .replace(/[\x00-\x1F\x7F]/g, (match) => {
         // Replace control characters with their escaped versions
         const charCode = match.charCodeAt(0);
@@ -74,7 +82,9 @@ Format as JSON with structure:
         if (charCode === 0x0D) return '\r'; // carriage return
         if (charCode === 0x09) return '\t'; // tab
         return ''; // remove other control characters
-      });
+      })
+      .trim();
+    
     return JSON.parse(cleanedContent);
   } catch (e) {
     console.error("Failed to parse layer patterns:", content.substring(0, 500));
@@ -127,14 +137,13 @@ Format as JSON with structure:
       {
         role: "system",
         content:
-          "You are a JSON generator. Always respond with valid JSON only, no markdown formatting.",
+          "You are a JSON generator. Always respond with valid JSON only, no markdown formatting. Do not include markdown code blocks or any text outside the JSON.",
       },
       {
         role: "user",
         content: prompt,
       },
     ],
-    response_format: { type: "json_object" },
   });
 
   const content = result.choices[0]?.message?.content;
@@ -143,8 +152,17 @@ Format as JSON with structure:
   }
 
   try {
+    // Extract JSON from the content (handle markdown code blocks and extra text)
+    let jsonStr = content;
+    
+    // Remove markdown code blocks if present
+    const jsonMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (jsonMatch) {
+      jsonStr = jsonMatch[1];
+    }
+    
     // Clean up the content to handle control characters
-    const cleanedContent = content
+    const cleanedContent = jsonStr
       .replace(/[\x00-\x1F\x7F]/g, (match) => {
         // Replace control characters with their escaped versions
         const charCode = match.charCodeAt(0);
@@ -152,7 +170,9 @@ Format as JSON with structure:
         if (charCode === 0x0D) return '\r'; // carriage return
         if (charCode === 0x09) return '\t'; // tab
         return ''; // remove other control characters
-      });
+      })
+      .trim();
+    
     return JSON.parse(cleanedContent);
   } catch (e) {
     console.error("Failed to parse power patterns:", content.substring(0, 500));
@@ -205,14 +225,13 @@ Format as JSON with structure:
       {
         role: "system",
         content:
-          "You are a JSON generator. Always respond with valid JSON only, no markdown formatting.",
+          "You are a JSON generator. Always respond with valid JSON only, no markdown formatting. Do not include markdown code blocks or any text outside the JSON.",
       },
       {
         role: "user",
         content: prompt,
       },
     ],
-    response_format: { type: "json_object" },
   });
 
   const content = result.choices[0]?.message?.content;
@@ -221,8 +240,17 @@ Format as JSON with structure:
   }
 
   try {
+    // Extract JSON from the content (handle markdown code blocks and extra text)
+    let jsonStr = content;
+    
+    // Remove markdown code blocks if present
+    const jsonMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)```/);
+    if (jsonMatch) {
+      jsonStr = jsonMatch[1];
+    }
+    
     // Clean up the content to handle control characters
-    const cleanedContent = content
+    const cleanedContent = jsonStr
       .replace(/[\x00-\x1F\x7F]/g, (match) => {
         // Replace control characters with their escaped versions
         const charCode = match.charCodeAt(0);
@@ -230,7 +258,9 @@ Format as JSON with structure:
         if (charCode === 0x0D) return '\r'; // carriage return
         if (charCode === 0x09) return '\t'; // tab
         return ''; // remove other control characters
-      });
+      })
+      .trim();
+    
     return JSON.parse(cleanedContent);
   } catch (e) {
     console.error("Failed to parse shift patterns:", content.substring(0, 500));
