@@ -85,7 +85,9 @@ Format as JSON with structure:
       })
       .trim();
     
-    return JSON.parse(cleanedContent);
+    const parsed = JSON.parse(cleanedContent);
+    // Return only the patterns array, extracting questions from each pattern
+    return parsed.patterns.map((p: any) => p.questions);
   } catch (e) {
     console.error("Failed to parse layer patterns:", content.substring(0, 500));
     throw new Error(`JSON parsing failed for layer patterns: ${e instanceof Error ? e.message : 'Unknown error'}`);
@@ -173,7 +175,9 @@ Format as JSON with structure:
       })
       .trim();
     
-    return JSON.parse(cleanedContent);
+    const parsed = JSON.parse(cleanedContent);
+    // Return only the patterns array, extracting questions from each pattern
+    return parsed.patterns.map((p: any) => p.questions);
   } catch (e) {
     console.error("Failed to parse power patterns:", content.substring(0, 500));
     throw new Error(`JSON parsing failed for power patterns: ${e instanceof Error ? e.message : 'Unknown error'}`);
@@ -261,7 +265,9 @@ Format as JSON with structure:
       })
       .trim();
     
-    return JSON.parse(cleanedContent);
+    const parsed = JSON.parse(cleanedContent);
+    // Return only the patterns array, extracting scenarios from each pattern
+    return parsed.patterns.map((p: any) => p.scenarios);
   } catch (e) {
     console.error("Failed to parse shift patterns:", content.substring(0, 500));
     throw new Error(`JSON parsing failed for shift patterns: ${e instanceof Error ? e.message : 'Unknown error'}`);
