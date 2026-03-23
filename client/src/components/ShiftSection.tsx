@@ -6,19 +6,21 @@ import { ArrowLeft, Send, Info } from "lucide-react";
 import { SHIFT_SCENARIOS } from "@shared/diagnosticData";
 import { getCurrentPattern } from "@/lib/patternSelector";
 import { cn } from "@/lib/utils";
+import type { ShiftScenario } from "@shared/diagnosticData";
 
 interface ShiftSectionProps {
   answers: Record<string, number[]>;
   onAnswer: (scenarioId: string, phaseIndex: number, value: number) => void;
-  onSubmit: () => void;
+  onNext: () => Promise<void>;
   onPrev: () => void;
+  scenarios?: ShiftScenario[];
 }
 
-export function ShiftSection({ answers, onAnswer, onSubmit, onPrev }: ShiftSectionProps) {
+export function ShiftSection({ answers, onAnswer, onNext, onPrev, scenarios: customScenarios }: ShiftSectionProps) {
   const [currentScenario, setCurrentScenario] = useState(0);
   const [currentPhase, setCurrentPhase] = useState(0);
   const pattern = getCurrentPattern();
-  const scenarios = pattern.shiftScenarios;
+  const scenarios = customScenarios || pattern.shiftScenarios;
   const scenario = scenarios[currentScenario];
   const phase = scenario.phases[currentPhase];
 
@@ -137,7 +139,7 @@ export function ShiftSection({ answers, onAnswer, onSubmit, onPrev }: ShiftSecti
           <ArrowLeft className="w-4 h-4" />
           戻る
         </Button>
-        <Button onClick={onSubmit} disabled={!allAnswered} className="gap-2">
+        <Button onClick={onNext} disabled={!allAnswered} className="gap-2">
           <Send className="w-4 h-4" />
           診断結果を見る
         </Button>

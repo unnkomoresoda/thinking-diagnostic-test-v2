@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { trpc } from "@/lib/trpc";
 import { DiagnosticIntro } from "@/components/DiagnosticIntro";
@@ -96,6 +96,20 @@ export default function Diagnostic() {
   const [shiftAnswers, setShiftAnswers] = useState<Record<string, number[]>>({});
   const [resultData, setResultData] = useState<any>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [patternIndex, setPatternIndex] = useState<number | null>(null);
+
+  // Get random pattern index on component mount
+  useEffect(() => {
+    const randomIndex = Math.floor(Math.random() * 4);
+    setPatternIndex(randomIndex);
+    sessionStorage.setItem('diagnosticPatternIndex', randomIndex.toString());
+  }, []);
+
+  // Fetch question patterns
+  const { data: patterns, isLoading: patternsLoading } = trpc.diagnostic.getPatterns.useQuery(
+    { patternIndex: patternIndex ?? 0 },
+    { enabled: patternIndex !== null }
+  ) as any;
 
   const submitMutation = trpc.diagnostic.submit.useMutation();
 
@@ -210,28 +224,31 @@ export default function Diagnostic() {
             onPrev={() => setStep("intro")}
           />
         )}
-        {step === "layer" && (
+        {step === "layer" && patterns && (
           <LayerSection
             answers={layerAnswers}
             onAnswer={handleLayerAnswer}
             onNext={() => setStep("power")}
             onPrev={() => setStep("baseType")}
+            questions={patterns.layerQuestions}
           />
         )}
-        {step === "power" && (
+        {step === "power" && patterns && (
           <PowerSection
             answers={powerAnswers}
             onAnswer={handlePowerAnswer}
             onNext={() => setStep("shift")}
             onPrev={() => setStep("layer")}
+            questions={patterns.powerQuestions}
           />
         )}
-        {step === "shift" && (
+        {step === "shift" && patterns && (
           <ShiftSection
             answers={shiftAnswers}
             onAnswer={handleShiftAnswer}
-            onSubmit={handleSubmit}
+            onNext={handleSubmit}
             onPrev={() => setStep("power")}
+            scenarios={patterns.shiftScenarios}
           />
         )}
         {step === "result" && resultData && (

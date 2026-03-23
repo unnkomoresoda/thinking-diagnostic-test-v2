@@ -3,7 +3,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
-import { saveDiagnosticResult, getDiagnosticResultsByUser, getDiagnosticResultById, getAllDiagnosticResults, getDiagnosticStats, getMonthlyStats, getTypeDistribution, saveQuestionPattern, getAllQuestionPatterns } from "./db";
+import { saveDiagnosticResult, getDiagnosticResultsByUser, getDiagnosticResultById, getAllDiagnosticResults, getDiagnosticStats, getMonthlyStats, getTypeDistribution, saveQuestionPattern, getAllQuestionPatterns, getQuestionPattern } from "./db";
 import { generateLayerPatterns, generatePowerPatterns, generateShiftPatterns } from "./questionPatternGenerator";
 import { TRPCError } from "@trpc/server";
 import {
@@ -42,6 +42,38 @@ export const appRouter = router({
   }),
 
   diagnostic: router({
+    /** Get question patterns for a diagnostic session */
+    getPatterns: publicProcedure
+      .input(z.object({
+        patternIndex: z.number().min(0).max(3),
+      }))
+      .query(async ({ input }) => {
+        try {
+          const layerPattern = await getQuestionPattern("layer", input.patternIndex);
+          const powerPattern = await getQuestionPattern("power", input.patternIndex);
+          const shiftPattern = await getQuestionPattern("shift", input.patternIndex);
+
+          // If patterns exist, return them; otherwise return default questions
+          return {
+            layerQuestions: layerPattern?.questions || LAYER_QUESTIONS,
+            powerQuestions: powerPattern?.questions || POWER_QUESTIONS,
+            shiftScenarios: shiftPattern?.questions || SHIFT_SCENARIOS,
+            patternIndex: input.patternIndex,
+            hasCustomPatterns: !!(layerPattern && powerPattern && shiftPattern),
+          };
+        } catch (error) {
+          console.error("[Diagnostic] Failed to get patterns:", error);
+          // Fallback to default questions
+          return {
+            layerQuestions: LAYER_QUESTIONS,
+            powerQuestions: POWER_QUESTIONS,
+            shiftScenarios: SHIFT_SCENARIOS,
+            patternIndex: input.patternIndex,
+            hasCustomPatterns: false,
+          };
+        }
+      }),
+
     /** Submit full diagnostic answers and compute result */
     submit: protectedProcedure
       .input(z.object({

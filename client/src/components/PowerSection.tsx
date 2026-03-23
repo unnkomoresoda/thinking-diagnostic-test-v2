@@ -6,18 +6,20 @@ import { ArrowLeft, ArrowRight, AlertTriangle } from "lucide-react";
 import { POWER_QUESTIONS } from "@shared/diagnosticData";
 import { getCurrentPattern } from "@/lib/patternSelector";
 import { cn } from "@/lib/utils";
+import type { PowerQuestion } from "@shared/diagnosticData";
 
 interface PowerSectionProps {
   answers: Record<string, number>;
   onAnswer: (questionId: string, value: number) => void;
   onNext: () => void;
   onPrev: () => void;
+  questions?: PowerQuestion[];
 }
 
-export function PowerSection({ answers, onAnswer, onNext, onPrev }: PowerSectionProps) {
+export function PowerSection({ answers, onAnswer, onNext, onPrev, questions: customQuestions }: PowerSectionProps) {
   const [currentQ, setCurrentQ] = useState(0);
   const pattern = getCurrentPattern();
-  const questions = pattern.powerQuestions;
+  const questions = customQuestions || pattern.powerQuestions;
   const question = questions[currentQ];
   const totalAnswered = Object.keys(answers).length;
   const allAnswered = totalAnswered >= questions.length;

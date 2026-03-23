@@ -7,17 +7,20 @@ import { LAYER_QUESTIONS } from "@shared/diagnosticData";
 import { getCurrentPattern } from "@/lib/patternSelector";
 import { cn } from "@/lib/utils";
 
+import type { LayerQuestion } from "@shared/diagnosticData";
+
 interface LayerSectionProps {
   answers: Record<string, number>;
   onAnswer: (questionId: string, value: number) => void;
   onNext: () => void;
   onPrev: () => void;
+  questions?: LayerQuestion[];
 }
 
-export function LayerSection({ answers, onAnswer, onNext, onPrev }: LayerSectionProps) {
+export function LayerSection({ answers, onAnswer, onNext, onPrev, questions: customQuestions }: LayerSectionProps) {
   const [currentQ, setCurrentQ] = useState(0);
   const pattern = getCurrentPattern();
-  const questions = pattern.layerQuestions;
+  const questions = customQuestions || pattern.layerQuestions;
   const question = questions[currentQ];
   const totalAnswered = Object.keys(answers).length;
   const allAnswered = totalAnswered >= questions.length;
