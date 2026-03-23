@@ -207,3 +207,39 @@ export async function getDiagnosticStats() {
     layerDist,
   };
 }
+
+export async function getMonthlyStats() {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+
+  // Monthly count and type distribution
+  const monthlyData = await db
+    .select({
+      month: sql<string>`DATE_FORMAT(${diagnosticResults.createdAt}, '%Y-%m')`,
+      count: count(),
+      baseType: diagnosticResults.baseType,
+      typeCode: diagnosticResults.typeCode,
+      typeName: diagnosticResults.typeName,
+    })
+    .from(diagnosticResults)
+    .groupBy(
+      sql`DATE_FORMAT(${diagnosticResults.createdAt}, '%Y-%m')`,
+      diagnosticResults.baseType,
+      diagnosticResults.typeCode,
+      diagnosticResults.typeName
+    )
+    .orderBy(sql`DATE_FORMAT(${diagnosticResults.createdAt}, '%Y-%m') DESC`);
+
+  // Group by month
+  const monthlyStats: Record<string, { total: number; types: Record<string, number> }> = {};
+  for (const row of monthlyData) {
+    const month = row.month || 'Unknown';
+    if (!monthlyStats[month]) {
+      monthlyStats[month] = { total: 0, types: {} };
+    }
+    monthlyStats[month].total += row.count;
+    monthlyStats[month].types[row.typeCode || 'Unknown'] = row.count;
+  }
+
+  return monthlyStats;
+}

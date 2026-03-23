@@ -3,7 +3,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
-import { saveDiagnosticResult, getDiagnosticResultsByUser, getDiagnosticResultById, getAllDiagnosticResults, getDiagnosticStats } from "./db";
+import { saveDiagnosticResult, getDiagnosticResultsByUser, getDiagnosticResultById, getAllDiagnosticResults, getDiagnosticStats, getMonthlyStats } from "./db";
 import { TRPCError } from "@trpc/server";
 import {
   calculateBaseType,
@@ -157,6 +157,11 @@ export const appRouter = router({
     /** Get diagnostic statistics (admin only) */
     stats: adminProcedure.query(async () => {
       return getDiagnosticStats();
+    }),
+
+    /** Get monthly diagnostic statistics (admin only) */
+    monthlyStats: adminProcedure.query(async () => {
+      return getMonthlyStats();
     }),
   }),
 });

@@ -43,10 +43,15 @@ export default function AdminDashboard() {
   const [, navigate] = useLocation();
   const [page, setPage] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
+  const [statsTab, setStatsTab] = useState<"overall" | "monthly">("overall");
 
   const isAdmin = user?.role === "admin";
 
   const { data: stats, isLoading: statsLoading } = trpc.admin.stats.useQuery(undefined, {
+    enabled: isAdmin,
+  });
+
+  const { data: monthlyStats, isLoading: monthlyStatsLoading } = trpc.admin.monthlyStats.useQuery(undefined, {
     enabled: isAdmin,
   });
 
