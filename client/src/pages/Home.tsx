@@ -3,14 +3,18 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { getLoginUrl } from "@/const";
 import { useLocation } from "wouter";
-import { Brain, Layers, Zap, Shuffle, ArrowRight, LogIn, History, Sparkles, BookOpen, Shield } from "lucide-react";
+import { Brain, Layers, Zap, Shuffle, ArrowRight, LogIn, History, Sparkles, BookOpen, Shield, HelpCircle } from "lucide-react";
+import { useState } from "react";
+import { DimensionModal } from "@/components/DimensionModal";
 
 export default function Home() {
   const { user, loading, isAuthenticated } = useAuth();
   const [, navigate] = useLocation();
+  const [selectedDimension, setSelectedDimension] = useState<"baseType" | "layer" | "power" | "shift" | null>(null);
 
   const dimensions = [
     {
+      id: "baseType" as const,
       icon: <Brain className="w-7 h-7" />,
       title: "Base Type",
       subtitle: "認知機能の優先順位",
@@ -19,6 +23,7 @@ export default function Home() {
       bg: "bg-chart-1/10",
     },
     {
+      id: "layer" as const,
       icon: <Layers className="w-7 h-7" />,
       title: "Cognitive Layer",
       subtitle: "思考の解像度と時間軸",
@@ -27,6 +32,7 @@ export default function Home() {
       bg: "bg-chart-2/10",
     },
     {
+      id: "power" as const,
       icon: <Zap className="w-7 h-7" />,
       title: "Processing Power",
       subtitle: "論理的整合性の検知精度",
@@ -35,6 +41,7 @@ export default function Home() {
       bg: "bg-chart-3/10",
     },
     {
+      id: "shift" as const,
       icon: <Shuffle className="w-7 h-7" />,
       title: "Dynamic Shift",
       subtitle: "レイヤー間の移動能力",
@@ -140,22 +147,34 @@ export default function Home() {
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {dimensions.map((dim) => (
-              <Card key={dim.title} className="border-0 shadow-sm hover:shadow-md transition-shadow">
+              <Card
+                key={dim.title}
+                className="border-0 shadow-sm hover:shadow-md transition-all cursor-pointer hover:bg-muted/50"
+                onClick={() => setSelectedDimension(dim.id)}
+              >
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
                     <div className={`p-3 rounded-xl ${dim.bg} ${dim.color} shrink-0`}>
                       {dim.icon}
                     </div>
-                    <div>
-                      <h3 className="font-semibold mb-0.5">{dim.title}</h3>
-                      <p className="text-xs text-muted-foreground mb-2">{dim.subtitle}</p>
-                      <p className="text-sm text-foreground/80 leading-relaxed">{dim.description}</p>
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <h3 className="font-semibold mb-0.5">{dim.title}</h3>
+                          <p className="text-xs text-muted-foreground mb-2">{dim.subtitle}</p>
+                          <p className="text-sm text-foreground/80 leading-relaxed">{dim.description}</p>
+                        </div>
+                        <HelpCircle className="w-4 h-4 text-muted-foreground shrink-0 mt-1" />
+                      </div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             ))}
           </div>
+          <p className="text-xs text-muted-foreground text-center mt-4">
+            💡 各項目をクリックして、詳しい説明を確認できます
+          </p>
         </div>
       </section>
 
@@ -210,6 +229,13 @@ export default function Home() {
           <p>80 Types Thinking Diagnostic — 次世代型思考診断テスト</p>
         </div>
       </footer>
+
+      {/* Dimension Modal */}
+      <DimensionModal
+        isOpen={selectedDimension !== null}
+        onClose={() => setSelectedDimension(null)}
+        dimension={selectedDimension}
+      />
     </div>
   );
 }
