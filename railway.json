@@ -4,7 +4,10 @@
     "builder": "nixpacks"
   },
   "deploy": {
-    "startCommand": "npm run start",
+    "startCommand": "node dist/index.js",
     "restartPolicyMaxRetries": 5
+  },
+  "env": {
+    "NODE_ENV": "development"
   }
 }
